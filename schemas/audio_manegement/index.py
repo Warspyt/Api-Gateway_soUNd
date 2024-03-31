@@ -2,8 +2,8 @@ from fastapi import APIRouter
 import strawberry
 from strawberry.asgi import GraphQL
 from strawberry.tools import merge_types
-from controllers.audio_manegement.song import song_query, song_mutation
-from controllers.audio_manegement.album import album_query, album_mutation
+from schemas.audio_manegement.song import song_query, song_mutation
+from schemas.audio_manegement.album import album_query, album_mutation
 
 app_graphql = APIRouter()
 
