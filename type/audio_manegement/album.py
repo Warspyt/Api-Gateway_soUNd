@@ -9,14 +9,9 @@ api_url = f'http://{url}:{audioManegement_port}/albums'
 @strawberry.type
 class Album:
     id: int
-    title: str
-    publicationDate: str
-    lyrics: str
-    version: int
+    name: str
+    description: str
     userid: int
-    audioid: int
-    albumid: int
-    image_url: str
     
 # Queries
 @strawberry.type
@@ -34,19 +29,14 @@ class Query:
             
             return Album(
                         id = data.get('id'),
-                        title = data.get('title'),
-                        publicationDate = data.get('publicationDate'),
-                        lyrics = data.get('lyrics'),
-                        version = data.get('version'),
-                        userid = data.get('userid'),
-                        audioid = data.get('audioid'),
-                        albumid = data.get('albumid'),
-                        image_url = data.get('image_url')
+                        name = data.get('name'),
+                        description = data.get('description'),
+                        userid = data.get('userid')
                     )
         else:
-            raise Exception(f'Error al obtener la canción con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
+            raise Exception(f'Error al obtener el album con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
         
-    # Get all songs
+    # Get all albums
     @strawberry.field    
     def albums(self) -> typing.List[Album]:
         
@@ -59,36 +49,27 @@ class Query:
             
             return [
                 Album(
-                    id = song_data.get('id'),
-                    title = song_data.get('title'),
-                    publicationDate = song_data.get('publicationDate'),
-                    lyrics = song_data.get('lyrics'),
-                    version = song_data.get('version'),
-                    userid = song_data.get('userid'),
-                    audioid = song_data.get('audioid'),
-                    albumid = song_data.get('albumid'),
-                    image_url = song_data.get('image_url')
+                    id = album_data.get('id'),
+                    name = album_data.get('name'),
+                    description = album_data.get('description'),
+                    userid = album_data.get('userid')
                 )
-                for song_data in data
+                for album_data in data
             ]
         else:
-            raise Exception(f'Error al obtener las canciones desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
+            raise Exception(f'Error al obtener los albumes desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
     
 # Mutations
 @strawberry.type
 class Mutation:
-    # post song
+    # post album
     @strawberry.mutation
-    def create_album(self, title: str, publication_date: str, lyrics: str, version: int, userid: int, audioid: int, albumid: int) -> str:
+    def create_album(self, name: str, description: str, userid: int) -> str:
         
         data = {
-            'title': title,
-            'publicationDate': publication_date,
-            'lyrics': lyrics,
-            'version': version,
-            'userid': userid,
-            'audioid': audioid,
-            'albumid': albumid
+            'name': name,
+            'description': description,
+            'userid': userid
         }
         
         # Hacer request en soUNd_AudioManegement_MS
@@ -98,20 +79,16 @@ class Mutation:
             return response.json()["message"]
         
         else:
-            raise Exception(f'Error al crear la canción\nError: {response.status_code}, {response.text}')
+            raise Exception(f'Error al crear el album\nError: {response.status_code}, {response.text}')
     
-    # put song
+    # put album
     @strawberry.mutation
-    def update_album(self, id:int, title: Optional[str] = None, publication_date: Optional[str] = None, lyrics: Optional[str] = None, version: Optional[int] = None, userid: Optional[int] = None, audioid: Optional[int] = None, albumid: Optional[int] = None) -> Album:
+    def update_album(self, id:int, name: Optional[str] = None, description: Optional[str] = None, userid: Optional[int] = None) -> Album:
         
         info = {
-            'title': title,
-            'publicationDate': publication_date,
-            'lyrics': lyrics,
-            'version': version,
+            'name': name,
+            'description': description,
             'userid': userid,
-            'audioid': audioid,
-            'albumid': albumid
         }
         
         info = {key: value for key, value in info.items() if value is not None}
@@ -125,26 +102,21 @@ class Mutation:
             
             return Album(
                         id = data.get('id'),
-                        title = data.get('title'),
-                        publicationDate = data.get('publicationDate'),
-                        lyrics = data.get('lyrics'),
-                        version = data.get('version'),
-                        userid = data.get('userid'),
-                        audioid = data.get('audioid'),
-                        albumid = data.get('albumid'),
-                        image_url = data.get('image_url')
+                        name = data.get('name'),
+                        description = data.get('description'),
+                        userid = data.get('userid')
                     )
         else:
-            raise Exception(f'Error al actualizar la canción con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
+            raise Exception(f'Error al actualizar el album con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
             
-    # delete song
+    # delete album
     @strawberry.mutation
     def delete_album(self, id: int) -> str:
         # Hacer request en soUNd_AudioManegement_MS
         response = requests.delete(f'{api_url}/{id}')
         
         if response.status_code == 204:
-            return f'Canción con id {id} eliminada exitosamente'
+            return f'Album con id {id} eliminado exitosamente'
         
         else:
-            raise Exception(f'Error al eliminar la canción con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
+            raise Exception(f'Error al eliminar el album con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
