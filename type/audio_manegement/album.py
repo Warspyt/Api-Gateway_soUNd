@@ -4,10 +4,10 @@ from typing import Optional
 import requests
 from server import url, audioManegement_port
 
-api_url = f'http://{url}:{audioManegement_port}/songs'
+api_url = f'http://{url}:{audioManegement_port}/albums'
 
 @strawberry.type
-class Song:
+class Album:
     id: int
     title: str
     publicationDate: str
@@ -21,9 +21,9 @@ class Song:
 # Queries
 @strawberry.type
 class Query:
-    # Get song by id
+    # Get album by id
     @strawberry.field    
-    def song(self, id: int) -> Song:
+    def album(self, id: int) -> Album:
         
         # Hacer request en soUNd_AudioManegement_MS
         response = requests.get(f'{api_url}/{id}')
@@ -32,7 +32,7 @@ class Query:
             # Devolver los datos obtenidos en formato JSON
             data = response.json()
             
-            return Song(
+            return Album(
                         id = data.get('id'),
                         title = data.get('title'),
                         publicationDate = data.get('publicationDate'),
@@ -48,7 +48,7 @@ class Query:
         
     # Get all songs
     @strawberry.field    
-    def songs(self) -> typing.List[Song]:
+    def albums(self) -> typing.List[Album]:
         
         # Hacer request en soUNd_AudioManegement_MS
         response = requests.get(api_url)
@@ -58,7 +58,7 @@ class Query:
             data = response.json()
             
             return [
-                Song(
+                Album(
                     id = song_data.get('id'),
                     title = song_data.get('title'),
                     publicationDate = song_data.get('publicationDate'),
@@ -79,7 +79,7 @@ class Query:
 class Mutation:
     # post song
     @strawberry.mutation
-    def create_song(self, title: str, publication_date: str, lyrics: str, version: int, userid: int, audioid: int, albumid: int) -> str:
+    def create_album(self, title: str, publication_date: str, lyrics: str, version: int, userid: int, audioid: int, albumid: int) -> str:
         
         data = {
             'title': title,
@@ -102,7 +102,7 @@ class Mutation:
     
     # put song
     @strawberry.mutation
-    def update_song(self, id:int, title: Optional[str] = None, publication_date: Optional[str] = None, lyrics: Optional[str] = None, version: Optional[int] = None, userid: Optional[int] = None, audioid: Optional[int] = None, albumid: Optional[int] = None) -> Song:
+    def update_album(self, id:int, title: Optional[str] = None, publication_date: Optional[str] = None, lyrics: Optional[str] = None, version: Optional[int] = None, userid: Optional[int] = None, audioid: Optional[int] = None, albumid: Optional[int] = None) -> Album:
         
         info = {
             'title': title,
@@ -123,7 +123,7 @@ class Mutation:
             # Devolver los datos obtenidos en formato JSON
             data = response.json()
             
-            return Song(
+            return Album(
                         id = data.get('id'),
                         title = data.get('title'),
                         publicationDate = data.get('publicationDate'),
@@ -139,7 +139,7 @@ class Mutation:
             
     # delete song
     @strawberry.mutation
-    def delete_song(self, id: int) -> str:
+    def delete_album(self, id: int) -> str:
         # Hacer request en soUNd_AudioManegement_MS
         response = requests.delete(f'{api_url}/{id}')
         
