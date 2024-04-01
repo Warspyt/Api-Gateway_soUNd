@@ -3,41 +3,9 @@ import typing
 from typing import Optional
 import requests
 from server import url, audioManegement_port
-import pika
-import json
-import threading
+from RabbitMQ.Audio_manegement.send import send_to_queue
 
 api_url = f'http://{url}:{audioManegement_port}/songs'
-
-# Conexión RabbitMQ
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-channel = connection.channel()
-channel.queue_declare(queue='song_queue')
-
-def consume_messages():
-    
-    # Escuchar la cola RabbitMQ y procesar las peticiones
-    def callback(ch, method, properties, body):
-        
-        data = json.loads(body)
-        response = requests.post(api_url, json=data)
-        
-        if response.status_code == 201:
-            print("Song created")
-            return response.json()["message"]
-        
-        else:
-            raise Exception(f'Error al crear la canción\nError: {response.status_code}, {response.text}')
-
-    channel.basic_consume(queue='song_queue', on_message_callback=callback, auto_ack=True)
-    print('Waiting for messages...')
-    channel.start_consuming()
-
-
-# Enviar peticiones a la cola RabbitMQ
-def send_to_queue(data):
-    channel.basic_publish(exchange='', routing_key='song_queue', body=json.dumps(data))
-    print ("Request sent")
 
 @strawberry.type
 class Song:
@@ -126,15 +94,6 @@ class Mutation:
         
         send_to_queue(data)
         return "Song creation request sent to queue."
-        
-        # # Hacer request en soUNd_AudioManegement_MS
-        # response = requests.post(api_url, json=data)
-        
-        # if response.status_code == 201:
-        #     return response.json()["message"]
-        
-        # else:
-        #     raise Exception(f'Error al crear la canción\nError: {response.status_code}, {response.text}')
     
     # put song
     @strawberry.mutation
@@ -183,8 +142,4 @@ class Mutation:
             return f'Canción con id {id} eliminada exitosamente'
         
         else:
-            raise Exception(f'Error al eliminar la canción con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
-        
-# Iniciar el consumidor en un hilo separado
-consumer_thread = threading.Thread(target=consume_messages)
-consumer_thread.start()       
+            raise Exception(f'Error al eliminar la canción con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}') 
