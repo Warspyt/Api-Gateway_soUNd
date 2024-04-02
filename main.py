@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from schemas.audio_manegement.index import app_graphql
+from schemas.index import app_graphql
 import threading
 from RabbitMQ.Audio_manegement.server import consume_messages
 

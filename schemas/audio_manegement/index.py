@@ -12,11 +12,7 @@ app_graphql = APIRouter()
 queries = (song_query, album_query, playlist_query)
 mutations = (song_mutation, album_mutation, playlist_mutation)
 
-# Merge schemas
+# Merge schemas 
+
 Query = merge_types("Query", queries)
 Mutation = merge_types("Mutation", mutations)
-
-schema = strawberry.Schema(query=Query, mutation=Mutation)
-graphql_app = GraphQL(schema)
-
-app_graphql.add_route('/graphql', graphql_app)
