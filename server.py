@@ -1,3 +1,6 @@
 # url = 'host.docker.internal'
 url = 'localhost'
 audioManegement_port = '3000'
+users_port = '8080'
+interactions_port = '1234'
+straming = '3001'
