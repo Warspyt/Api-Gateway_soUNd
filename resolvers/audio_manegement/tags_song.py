@@ -55,7 +55,7 @@ class Query:
                 for tag_data in data
             ]
         else:
-            raise Exception(f'Error al obtener la tag con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
+            raise Exception(f'Error al obtener la las canciones de tag con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
         
     # Get all tags_songs
     @strawberry.field    
@@ -145,7 +145,7 @@ class Mutation:
         else:
             raise Exception(f'Error al actualizar la tag_song con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
             
-    # delete tag
+    # delete tag_song
     @strawberry.mutation
     def delete_tag_song(self, id: int) -> str:
         # Hacer request en soUNd_AudioManegement_MS
