@@ -74,6 +74,31 @@ class Query:
             ]
         else:
             raise Exception(f'Error al obtener las canciones desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
+        
+    # # Get songs by tag
+    # @strawberry.field    
+    # def song_by_tag(self, id: int) -> Song:
+        
+    #     # Hacer request en soUNd_AudioManegement_MS
+    #     response = requests.get(f'{api_url}/{id}')
+        
+    #     if response.status_code == 200:
+    #         # Devolver los datos obtenidos en formato JSON
+    #         data = response.json()
+            
+    #         return Song(
+    #                     id = data.get('id'),
+    #                     title = data.get('title'),
+    #                     publicationDate = data.get('publicationDate'),
+    #                     lyrics = data.get('lyrics'),
+    #                     version = data.get('version'),
+    #                     userid = data.get('userid'),
+    #                     audioid = data.get('audioid'),
+    #                     albumid = data.get('albumid'),
+    #                     image_url = data.get('image_url')
+    #                 )
+    #     else:
+    #         raise Exception(f'Error al obtener la canción con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
     
 # Mutations
 @strawberry.type
