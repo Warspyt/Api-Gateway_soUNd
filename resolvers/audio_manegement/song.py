@@ -3,6 +3,7 @@ import typing
 from typing import Optional
 import requests
 from server import url, audioManegement_port
+from RabbitMQ.Audio_manegement.send import send_to_queue
 
 api_url = f'http://{url}:{audioManegement_port}/songs'
 
@@ -79,7 +80,7 @@ class Query:
 class Mutation:
     # post song
     @strawberry.mutation
-    def create_song(self, title: str, publication_date: str, lyrics: str, version: int, userid: int, audioid: int, albumid: int) -> str:
+    async def create_song(self, title: str, publication_date: str, lyrics: str, version: int, userid: int, audioid: int, albumid: int) -> str:
         
         data = {
             'title': title,
@@ -91,14 +92,8 @@ class Mutation:
             'albumid': albumid
         }
         
-        # Hacer request en soUNd_AudioManegement_MS
-        response = requests.post(api_url, json=data)
-        
-        if response.status_code == 201:
-            return response.json()["message"]
-        
-        else:
-            raise Exception(f'Error al crear la canción\nError: {response.status_code}, {response.text}')
+        send_to_queue(data)
+        return "Song creation request sent to queue."
     
     # put song
     @strawberry.mutation
@@ -147,4 +142,4 @@ class Mutation:
             return f'Canción con id {id} eliminada exitosamente'
         
         else:
-            raise Exception(f'Error al eliminar la canción con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
+            raise Exception(f'Error al eliminar la canción con ID {id} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}') 
