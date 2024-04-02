@@ -1,4 +1,5 @@
 import datetime
+import json
 import strawberry
 import typing
 from typing import Optional
@@ -10,15 +11,14 @@ api_url = f'http://{url}:{users_port}/api/users'
 
 @strawberry.type
 class User:
-    name: int
-    title: str
-    publicationDate: str
-    lyrics: str
-    version: int
-    userid: int
-    audioid: int
-    albumid: int
-    image_url: str
+    name: str
+    lastname: str
+    username: str
+    email: str
+    phone: str
+    birthday: str
+    role: str
+    created_at: str
 
 # Queries
 
@@ -31,28 +31,31 @@ class Query:
 
         # Hacer request en soUNd_AudioManegement_MS
         response = requests.get(f'{api_url}/{id}')
+        r = response.text.split("\n")
 
         if response.status_code == 200:
             # Devolver los datos obtenidos en formato JSON
-            data = response.json()
+            try:
+                data = json.loads(r[1])
+                return User(
+                    name=data.get('name'),
+                    lastname=data.get('lastname'),
+                    username=data.get('username'),
+                    email=data.get('email'),
+                    phone=data.get('phone'),
+                    birthday=data.get('birthday'),
+                    role=data.get('role'),
+                    created_at=data.get('created_at')
+                )
+            except:
+                raise Exception(r[1])
 
-            return User(
-                id=data.get('id'),
-                title=data.get('title'),
-                publicationDate=data.get('publicationDate'),
-                lyrics=data.get('lyrics'),
-                version=data.get('version'),
-                userid=data.get('userid'),
-                audioid=data.get('audioid'),
-                albumid=data.get('albumid'),
-                image_url=data.get('image_url')
-            )
         else:
             raise Exception(
                 f'Error al obtener el usuario con ID {id} desde el microservicio User\nError: {response.status_code}, {response.text}')
 
     @strawberry.field
-    def login(self, username: str, password: str) -> User:
+    def login(self, username: str, password: str) -> str:
         info = {
             'username': username,
             'password': password
@@ -83,7 +86,7 @@ class Mutation:
 
     # put song
     @strawberry.mutation
-    def update_song(self, name: Optional[str] = None, lastname: Optional[str] = None, username: Optional[str] = None, password: Optional[str] = None, email: Optional[str] = None, phone: Optional[str] = None) -> str:
+    def update_user(self, id: int, name: Optional[str] = None, lastname: Optional[str] = None, username: Optional[str] = None, password: Optional[str] = None, email: Optional[str] = None, phone: Optional[str] = None) -> str:
 
         info = {
             'name': name,
@@ -91,7 +94,7 @@ class Mutation:
             'username': username,
             'password': password,
             'email': email,
-            'phone': phone,
+            'phone': phone
         }
 
         info = {key: value for key, value in info.items() if value is not None}
