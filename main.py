@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from schemas.audio_manegement.index import app_graphql
+from schemas.Index import app_graphql
+
 
 app = FastAPI()
 
