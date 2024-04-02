@@ -7,8 +7,8 @@ from schemas.audio_manegement.index import queries as audio_manegement_queries, 
 app_graphql = APIRouter()
 
 # All queries
-queries = (audio_manegement_queries)
-mutations = (audio_manegement_mutations)
+queries = audio_manegement_queries
+mutations = audio_manegement_mutations
 
 # Merge schemas 
 
