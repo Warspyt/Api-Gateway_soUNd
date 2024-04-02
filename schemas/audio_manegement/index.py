@@ -5,12 +5,13 @@ from strawberry.tools import merge_types
 from schemas.audio_manegement.song import song_query, song_mutation
 from schemas.audio_manegement.album import album_query, album_mutation
 from schemas.audio_manegement.playlist import playlist_query, playlist_mutation
+from schemas.audio_manegement.tags import tag_query, tag_mutation
 
 app_graphql = APIRouter()
 
 # All queries
-queries = (song_query, album_query, playlist_query)
-mutations = (song_mutation, album_mutation, playlist_mutation)
+queries = (song_query, album_query, playlist_query, tag_query)
+mutations = (song_mutation, album_mutation, playlist_mutation, tag_mutation)
 
 # Merge schemas 
 
