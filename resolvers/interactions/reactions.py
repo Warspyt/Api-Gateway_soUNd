@@ -80,13 +80,13 @@ class Query:
     def liked_audios(self, user_id: int) -> typing.List[Songs]:
         response = requests.get(f'{api_url}/likes?user={user_id}')
         # TO DO: Convertir IDs a nombres de canciones
-        print(response)
+        print(response.json())
         if response.status_code == 200:
             data = response.json()
             return [Songs(
                     id=song,
                     name=requests.get(
-                        f'{audio_api_url}/{id}').json().get('title')
+                        f'{audio_api_url}/{song}').json().get('title')
                     )
                     for song in data['songs']
                     ]

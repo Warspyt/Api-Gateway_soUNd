@@ -4,10 +4,12 @@ import requests
 
 app_streaming = APIRouter()
 
+
 @app_streaming.get("/")
 async def upload_song():
     return "Funciona la api"
-    
+
+
 @app_streaming.post("/upload")
 async def upload_song(file: UploadFile):
     try:
@@ -18,7 +20,9 @@ async def upload_song(file: UploadFile):
 
         return response_data
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al subir la canción: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error al subir la canción: {str(e)}")
+
 
 @app_streaming.get("/play/{song_id}")
 async def play_song(song_id: str):
@@ -26,12 +30,15 @@ async def play_song(song_id: str):
         stream_url = f"http://localhost:3001/audio/streaming/{song_id}"
         response = requests.get(stream_url, stream=True)
         if response.status_code == 200:
-            return StreamingResponse(response.iter_content(chunk_size=10000), media_type="audio/mpeg")
+            return StreamingResponse(response.iter_content(chunk_size=10000), media_type="audio/mp3")
         else:
-            raise HTTPException(status_code=response.status_code, detail="No se pudo reproducir la canción")
+            raise HTTPException(status_code=response.status_code,
+                                detail="No se pudo reproducir la canción")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al reproducir la canción: {str(e)}")
-    
+        raise HTTPException(
+            status_code=500, detail=f"Error al reproducir la canción: {str(e)}")
+
+
 @app_streaming.get("/canciones")
 async def canciones():
     try:
@@ -41,7 +48,8 @@ async def canciones():
             data = response.json()
             return JSONResponse(content=data)
         else:
-            raise HTTPException(status_code=response.status_code, detail="No se pudieron encontrar las canciones")
+            raise HTTPException(status_code=response.status_code,
+                                detail="No se pudieron encontrar las canciones")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al encontrar las canciones: {str(e)}")
-
+        raise HTTPException(
+            status_code=500, detail=f"Error al encontrar las canciones: {str(e)}")

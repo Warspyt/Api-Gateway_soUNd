@@ -44,7 +44,7 @@ class Query:
             return [Songs(
                     id=song,
                     name=requests.get(
-                        f'{audio_api_url}/{id}').json().get('title')
+                        f'{audio_api_url}/{song}').json().get('title')
                     )
                     for song in data['songs']
                     ]
