@@ -3,7 +3,7 @@ from server import url, audioManegement_port
 import json
 import requests
 
-api_url = f'http://{url}:{audioManegement_port}/songs'
+api_url = f'http://{urjajajajl}:{audioManegement_port}/songs'
 
 # Conexión RabbitMQ
 connection = pika.BlockingConnection(pika.ConnectionParameters(url))

@@ -1,6 +1,9 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, APIRouter
 from fastapi.responses import StreamingResponse, JSONResponse
 import requests
+from server import url, straming
+
+api_url = f'http://{url}:{straming}/audio'
 
 app_streaming = APIRouter()
 
@@ -13,7 +16,7 @@ async def upload_song():
 @app_streaming.post("/upload")
 async def upload_song(file: UploadFile):
     try:
-        upload_url = "http://localhost:3001/audio/upload"
+        upload_url = f"{api_url}/upload"
         files = {"audio": (file.filename, file.file, file.content_type)}
         response = requests.post(upload_url, files=files)
         response_data = response.json()
@@ -27,7 +30,7 @@ async def upload_song(file: UploadFile):
 @app_streaming.get("/play/{song_id}")
 async def play_song(song_id: str):
     try:
-        stream_url = f"http://localhost:3001/audio/streaming/{song_id}"
+        stream_url = f"{api_url}/streaming/{song_id}"
         response = requests.get(stream_url, stream=True)
         if response.status_code == 200:
             return StreamingResponse(response.iter_content(chunk_size=10000), media_type="audio/mp3")
@@ -42,7 +45,7 @@ async def play_song(song_id: str):
 @app_streaming.get("/canciones")
 async def canciones():
     try:
-        stream_url = "http://localhost:3001/audio"
+        stream_url = f"{api_url}"
         response = requests.get(stream_url)
         if response.status_code == 200:
             data = response.json()
