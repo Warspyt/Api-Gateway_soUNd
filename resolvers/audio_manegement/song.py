@@ -3,7 +3,7 @@ import typing
 from typing import Optional
 import requests
 from server import url, audioManegement_port
-from RabbitMQ.Audio_manegement.send import send_to_queue
+# from RabbitMQ.Audio_manegement.send import send_to_queue
 
 api_url = f'http://{url}:{audioManegement_port}/songs'
 
@@ -14,7 +14,7 @@ class Song:
     publicationDate: str
     lyrics: str
     version: int
-    userid: int
+    userid: str
     audioid: int
     albumid: int
     image_url: str
@@ -80,7 +80,7 @@ class Query:
 class Mutation:
     # post song
     @strawberry.mutation
-    async def create_song(self, title: str, publication_date: str, lyrics: str, version: int, userid: int, audioid: int, albumid: int) -> str:
+    async def create_song(self, title: str, publication_date: str, lyrics: str, version: int, userid: str, audioid: int, albumid: int) -> str:
         
         data = {
             'title': title,
