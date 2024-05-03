@@ -60,9 +60,15 @@ class Query:
             'username': username,
             'password': password
         }
-        response = requests.put(f'{api_url}/login', json=info)
-        if response.status_code == 200:
-            return f'Inicio de sesión exitoso'
+        response = requests.post(f'{api_url}/login', json=info)
+        if 'Login exitoso' in response.text:
+            print(response.text)
+            json_string = response.text.split('\n')[1]
+            data = json.loads(json_string)
+            token = data['token']
+            print('-----')
+            print(token)
+            return token
 
         else:
             raise Exception(
@@ -124,7 +130,7 @@ class Mutation:
 
         response = requests.post(f'{api_url}/signup', json=info)
 
-        if response.status_code == 200:
+        if 'Usuario creado' in response.text:
             # Devolver los datos obtenidos en formato JSON
             return f'Se ha creado un usuario de forma exitosa!!!'
         else:
