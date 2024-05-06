@@ -1,5 +1,5 @@
-# url = '172.22.224.1'
-#  url = 'localhost'
+#url = '172.22.224.1'
+#url = 'localhost'
 url = 'host.docker.internal'
 audioManegement_port = '3000'
 users_port = '8080'

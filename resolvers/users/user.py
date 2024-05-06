@@ -31,12 +31,14 @@ class Query:
     @strawberry.field
     def getId(self, username: str) -> int:
         response = requests.get(f'{api_url}/username/{username}')
-        if response.status_code == 200:
-            return int(response.text)
-
+        if "Error al obtener" not in response.text:
+            rta = response.text.split("\n")[1]
+            rta = rta.split("\"")[3].strip()
+            return int(rta)
         else:
             raise Exception(
                 f'Error al obtener el ID del usuario con username {username} desde el microservicio Users\nError: {response.status_code}, {response.text}')
+        
     # Get song by id
     @strawberry.field
     def getInfo(self, id: int) -> User:
