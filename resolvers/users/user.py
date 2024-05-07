@@ -5,6 +5,8 @@ import typing
 from typing import Optional
 import requests
 from server import url, users_port
+from service_ldap.ldap import ldapAdministrator
+from service_ldap.ldap import user
 
 api_url = f'http://{url}:{users_port}/api/users'
 
@@ -74,7 +76,16 @@ class Query:
             'username': username,
             'password': password
         }
+
+        ldap = ldapAdministrator()
+        response = ldap.check_user_credentials(username, password)
+
+        if not response['respuesta']:
+            raise Exception (
+                f'Error al iniciar sesión \nError: {"400"}, {response['Detail']} LDAP')
+
         response = requests.post(f'{api_url}/login', json=info)
+
         if 'Login exitoso' in response.text:
             print(response.text)
             json_string = response.text.split('\n')[1]
@@ -116,7 +127,7 @@ class Mutation:
             'email': email,
             'phone': phone
         }
-
+        
         info = {key: value for key, value in info.items() if value is not None}
 
         # Hacer request en soUNd_AudioManegement_MS
@@ -142,11 +153,23 @@ class Mutation:
             'phone': phone,
         }
 
-        response = requests.post(f'{api_url}/signup', json=info)
+        newUser = user(username, password, name, lastname, email)
+        ldap = ldapAdministrator()
+        response = ldap.create_user(newUser)
+        
+        if not response['respuesta']:
+            raise Exception (
+                f'Error al crear el usuario desde el microservicio Users\nError: {"400"}, {response['Detail']} LDAP'
+                )
 
+        response = requests.post(f'{api_url}/signup', json=info)
+        print(response)
+        
         if 'Usuario creado' in response.text:
             # Devolver los datos obtenidos en formato JSON
             return f'Se ha creado un usuario de forma exitosa!!!'
         else:
+            ldap.delete_user(username)
             raise Exception(
                 f'Error al crear el usuario desde el microservicio Users\nError: {response.status_code}, {response.text}')
+                
