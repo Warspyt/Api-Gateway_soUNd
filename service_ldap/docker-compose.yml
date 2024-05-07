@@ -1,8 +1,8 @@
 version: '2.1'
 services:
-  soundUnal-ldap:
+  soundunal_ldap:
     image: osixia/openldap:1.1.8
-    container_name: soundUnal_ldap
+    container_name: soundunal_ldap
     environment:
       COMPOSE_HTTP_TIMEOUT: 200
       LDAP_LOG_LEVEL: "256"
@@ -43,9 +43,9 @@ services:
     image: osixia/phpldapadmin:latest
     container_name: ldap_client
     environment:
-      PHPLDAPADMIN_LDAP_HOSTS: "soundUnal_ldap"
+      PHPLDAPADMIN_LDAP_HOSTS: "soundunal_ldap"
       PHPLDAPADMIN_HTTPS: "false"
     ports:
       - "8085:80"
     links:
-      - soundUnal_ldap
+      - soundunal_ldap

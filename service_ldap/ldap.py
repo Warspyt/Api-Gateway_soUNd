@@ -1,6 +1,7 @@
 from ldap3 import Server, Connection, SUBTREE, ALL
 from hashlib import sha256
 
+
 class user:
     def __init__(self, username, password, name, lastname, email):
         self.username = username
@@ -9,62 +10,63 @@ class user:
         self.lastname = lastname
         self.email = email
 
-class ldapAdministrator:
-    ldap_server = Server('localhost', port=389, get_info=ALL)  
-    ldap_user = 'cn=admin,dc=arqsoft,dc=unal,dc=edu,dc=co'  
-    ldap_password = 'admin'  
 
-    # Conexion a la base de datos  
+class ldapAdministrator:
+    ldap_server = Server('host.docker.internal', port=389, get_info=ALL)
+    ldap_user = 'cn=admin,dc=arqsoft,dc=unal,dc=edu,dc=co'
+    ldap_password = 'admin'
+
+    # Conexion a la base de datos
 
     def get_conection_admin(self):
         try:
             ldap_connection = Connection(
-                self.ldap_server, 
-                user=self.ldap_user, 
-                password=self.ldap_password, 
+                self.ldap_server,
+                user=self.ldap_user,
+                password=self.ldap_password,
                 auto_bind=True,
-                
+
             )
             print("Conexión exitosa al servidor LDAP")
             return ldap_connection
         except Exception as e:
             print(f"No se pudo conectar al servidor LDAP: {e}")
             return None
-        
+
     def get_conection_user(self, user_dn, password):
         try:
             ldap_connection = Connection(
-                self.ldap_server, 
-                user=user_dn, 
-                password=password, 
+                self.ldap_server,
+                user=user_dn,
+                password=password,
                 auto_bind=True,
-                
+
             )
             print("Conexión exitosa al servidor LDAP")
             return ldap_connection
         except Exception as e:
             print(f"No se pudo conectar al servidor LDAP: {e}")
             return None
-        
-    # Creacion de usuario 
 
-    def create_user(self, user : user):
+    # Creacion de usuario
+
+    def create_user(self, user: user):
         conn = self.get_conection_admin()
 
         if not conn:
-             return {
-                    'respuesta' : False,
-                    'Detail' : "La conexion ha fracasado" 
-                }
-    
+            return {
+                'respuesta': False,
+                'Detail': "La conexion ha fracasado"
+            }
+
         new_user_dn = f'cn={user.username},cn=users,dc=arqsoft,dc=unal,dc=edu,dc=co'
 
         if self.check_user_existence(user.username, conn):
             return {
-                    'respuesta' : False,
-                    'Detail' : "Usuario ya ha sido creado" 
-                }
-        
+                'respuesta': False,
+                'Detail': "Usuario ya ha sido creado"
+            }
+
         new_user_attributes = {
             'objectClass': ['inetOrgPerson', 'top'],
             'uid': user.username,
@@ -78,31 +80,31 @@ class ldapAdministrator:
             response = conn.add(new_user_dn, attributes=new_user_attributes)
             if response:
                 return {
-                    'respuesta' : True,
-                    'Detail' : "Usuario creado" 
+                    'respuesta': True,
+                    'Detail': "Usuario creado"
                 }
             else:
                 return {
-                    'respuesta' : False,
-                    'Detail' : "Usuario NO creado" 
+                    'respuesta': False,
+                    'Detail': "Usuario NO creado"
                 }
         except Exception as e:
             return {
-                'respuesta' : False,
-                'Detail' : e 
+                'respuesta': False,
+                'Detail': e
             }
 
     # Verificar si el usuario existe
 
-    def check_user_existence(self, username, conn = False):
+    def check_user_existence(self, username, conn=False):
         if conn == False:
             conn = self.get_conection_admin()
 
-        
         user_dn = f'cn={username},cn=users,dc=arqsoft,dc=unal,dc=edu,dc=co'
-        
+
         try:
-            conn.search(search_base=user_dn, search_filter='(objectClass=inetOrgPerson)', search_scope=SUBTREE)
+            conn.search(search_base=user_dn,
+                        search_filter='(objectClass=inetOrgPerson)', search_scope=SUBTREE)
             if conn.entries:
                 print("El usuario existe en el servidor LDAP")
                 return True
@@ -112,33 +114,33 @@ class ldapAdministrator:
         except Exception as e:
             print(f"No se pudo verificar la existencia del usuario: {e}")
             return True
-        
-    # Verificar la existencia del usuario   
+
+    # Verificar la existencia del usuario
 
     def check_user_credentials(self, username, password):
-        
+
         conn = self.get_conection_admin()
 
         if not conn:
-             return {
-                    'respuesta' : False,
-                    'Detail' : "La conexion ha fracasado" 
-                }
+            return {
+                'respuesta': False,
+                'Detail': "La conexion ha fracasado"
+            }
 
         user_dn = f'cn={username},cn=users,dc=arqsoft,dc=unal,dc=edu,dc=co'
         conn = self.get_conection_user(user_dn, self.get_hash_pass(password))
 
         if not conn:
-             return {
-                    'respuesta' : False,
-                    'Detail' : "Usuario o Contraseña incorrecto" 
-                }
+            return {
+                'respuesta': False,
+                'Detail': "Usuario o Contraseña incorrecto"
+            }
 
         return {
-                'respuesta' : True,
-                'Detail' : "Credenciales" 
-            }
-    
+            'respuesta': True,
+            'Detail': "Credenciales"
+        }
+
     def delete_user(self, username):
         try:
             conn = self.get_conection_admin()
@@ -153,5 +155,3 @@ class ldapAdministrator:
 
     def get_hash_pass(self, password):
         return sha256(password.encode('utf-8')).hexdigest()
-
-
