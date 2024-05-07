@@ -1,8 +1,8 @@
 version: '2.1'
 services:
-  swarch2024i-ldap:
+  soundUnal-ldap:
     image: osixia/openldap:1.1.8
-    container_name: swarch2024i_ldap
+    container_name: soundUnal_ldap
     environment:
       COMPOSE_HTTP_TIMEOUT: 200
       LDAP_LOG_LEVEL: "256"
@@ -43,9 +43,9 @@ services:
     image: osixia/phpldapadmin:latest
     container_name: ldap_client
     environment:
-      PHPLDAPADMIN_LDAP_HOSTS: "swarch2024i-ldap"
+      PHPLDAPADMIN_LDAP_HOSTS: "soundUnal_ldap"
       PHPLDAPADMIN_HTTPS: "false"
     ports:
       - "8085:80"
     links:
-      - swarch2024i-ldap
+      - soundUnal_ldap
