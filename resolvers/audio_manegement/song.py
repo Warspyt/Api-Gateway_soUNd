@@ -16,7 +16,7 @@ class Song:
     lyrics: str
     version: int
     userid: int
-    audioid: int
+    audioid: str
     albumid: int
     image_url: str
 
@@ -87,7 +87,7 @@ class Query:
 class Mutation:
     # post song
     @strawberry.mutation
-    async def create_song(self, title: str, publication_date: str, lyrics: str, version: int, userid: int, audioid: int, albumid: int) -> str:
+    async def create_song(self, title: str, publication_date: str, lyrics: str, version: int, userid: int, audioid: str, albumid: int) -> str:
 
         data = {
             'title': title,
@@ -104,7 +104,7 @@ class Mutation:
 
     # put song
     @strawberry.mutation
-    def update_song(self, id: int, title: Optional[str] = None, publication_date: Optional[str] = None, lyrics: Optional[str] = None, version: Optional[int] = None, userid: Optional[int] = None, audioid: Optional[int] = None, albumid: Optional[int] = None) -> Song:
+    def update_song(self, id: int, title: Optional[str] = None, publication_date: Optional[str] = None, lyrics: Optional[str] = None, version: Optional[int] = None, userid: Optional[int] = None, audioid: Optional[str] = None, albumid: Optional[int] = None) -> Song:
 
         info = {
             'title': title,
