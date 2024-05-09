@@ -3,7 +3,7 @@ import typing
 from typing import Optional
 import requests
 from server import url, audioManegement_port
-# from RabbitMQ.Audio_manegement.send import send_to_queue
+from RabbitMQ.Audio_manegement.send import send_to_queue
 
 api_url = f'http://{url}:{audioManegement_port}/songs'
 
