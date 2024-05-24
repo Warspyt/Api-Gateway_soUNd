@@ -1,0 +1,8 @@
+name : api-gateway
+version: '3.8'
+services:
+  gateway-python:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
