@@ -3,7 +3,7 @@ import typing
 from typing import Optional
 import requests
 from server import url, audioManegement_port
-from RabbitMQ.Audio_manegement.send import send_to_queue
+# from RabbitMQ.Audio_manegement.send import send_to_queue
 
 api_url = f'http://{url}:{audioManegement_port}/songs'
 api_url2 = f'http://{url}:{audioManegement_port}/show_by_title'
@@ -54,15 +54,14 @@ class Query:
 
     # Get song by name
     @strawberry.field
-    def songByName(self, name: str) -> typing.List[Song]:
+    def songByName(self, title: str) -> typing.List[Song]:
 
         # Hacer request en soUNd_AudioManegement_MS
-        response = requests.get(f'{api_url2}?title={name}')
+        response = requests.get(f'{api_url2}?title={title}')
 
         if response.status_code == 200:
             # Devolver los datos obtenidos en formato JSON
             data = response.json()
-            print(data)
 
             return [
                 Song(
@@ -80,7 +79,7 @@ class Query:
             ]   
         else:
             raise Exception(
-                f'Error al obtener la canción {name} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
+                f'Error al obtener la canción {title} desde el microservicio Audio Manegement\nError: {response.status_code}, {response.text}')
 
     # Get all songs
     @strawberry.field
@@ -130,18 +129,18 @@ class Mutation:
             'albumid': albumid
         }
         
-        # # Sin cola
-        # response = requests.post(api_url, json=data)
+        # Sin cola
+        response = requests.post(api_url, json=data)
         
-        # if response.status_code == 201:
-        #     print("Song created")
-        #     return response.json()["message"]
+        if response.status_code == 201:
+            print("Song created")
+            return response.json()["message"]
         
-        # else:
-        #     raise Exception(f'Error al crear la canción\nError: {response.status_code}, {response.text}')
+        else:
+            raise Exception(f'Error al crear la canción\nError: {response.status_code}, {response.text}')
 
-        send_to_queue(data)
-        return "Song creation request sent to queue."
+        # send_to_queue(data)
+        # return "Song creation request sent to queue."
 
     # put song
     @strawberry.mutation
