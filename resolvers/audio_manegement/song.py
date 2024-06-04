@@ -3,7 +3,7 @@ import typing
 from typing import Optional
 import requests
 from server import url, audioManegement_port
-# from RabbitMQ.Audio_manegement.send import send_to_queue
+from RabbitMQ.Audio_manegement.send import send_to_queue
 
 api_url = f'http://{url}:{audioManegement_port}/songs'
 api_url2 = f'http://{url}:{audioManegement_port}/show_by_title'
@@ -129,18 +129,18 @@ class Mutation:
             'albumid': albumid
         }
         
-        # Sin cola
-        response = requests.post(api_url, json=data)
+        # # Sin cola
+        # response = requests.post(api_url, json=data)
         
-        if response.status_code == 201:
-            print("Song created")
-            return response.json()["message"]
+        # if response.status_code == 201:
+        #     print("Song created")
+        #     return response.json()["message"]
         
-        else:
-            raise Exception(f'Error al crear la canción\nError: {response.status_code}, {response.text}')
+        # else:
+        #     raise Exception(f'Error al crear la canción\nError: {response.status_code}, {response.text}')
 
-        # send_to_queue(data)
-        # return "Song creation request sent to queue."
+        send_to_queue(data)
+        return "Song creation request sent to queue."
 
     # put song
     @strawberry.mutation
